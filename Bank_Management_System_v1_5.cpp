@@ -27,18 +27,42 @@ void createAccount()
     cout << "\nName           : " << account.name;
     cout << "\nBalance        : " << account.balance;
 }
-void depositMoney()
+bool checkAccount()
 {
     if (!account.accountCreated)
     {
         cout << "Please Create Account First!" << endl;
-        return;
+        return false;
     }
+
+    return true;
+}
+bool verifyAccount()
+{
     int accountNo;
-    float amount;
+
     cout << "Enter Account Number : ";
     cin >> accountNo;
 
+    if (accountNo == account.accountno)
+    {
+        return true;
+    }
+
+    cout << "Account Not Found!" << endl;
+    return false;
+}
+void depositMoney()
+{
+    if (!checkAccount())
+    {
+        return;
+    }
+    if (!verifyAccount())
+    {
+        return;
+    }
+    float amount;
     while (true)
     {
         cout << "Enter Deposit Amount : ";
@@ -46,33 +70,26 @@ void depositMoney()
 
         if (amount > 0)
         {
+            account.balance += amount;
+            cout << "Money Deposited Successfully!" << endl;
+            cout << "Current Balance : " << account.balance;
             break;
         }
 
         cout << "Wrong Amount! Please enter a positive amount.\n";
     }
-    if (accountNo == account.accountno)
-    {
-        account.balance += amount;
-        cout << "Money Deposited Successfully!" << endl;
-        cout << "Current Balance : " << account.balance;
-    }
-    else
-    {
-        cout << "Account Not Found!" << endl;
-    }
 }
 void withdrawMoney()
 {
-    if (!account.accountCreated)
+    if (!checkAccount())
     {
-        cout << "Please Create Account First!" << endl;
         return;
     }
-    int accountNo;
+    if (!verifyAccount())
+    {
+        return;
+    }
     float amount;
-    cout << "Enter Account Number : ";
-    cin >> accountNo;
     while (true)
     {
         cout << "Enter Withdraw Amount : ";
@@ -85,174 +102,146 @@ void withdrawMoney()
 
         cout << "Wrong Amount! Please enter a positive amount.\n";
     }
-    if (accountNo == account.accountno)
+    if (account.balance >= amount)
     {
-        if (account.balance >= amount)
-        {
-            account.balance -= amount;
-            cout << "\nMoney Withdraw Successfully!" << endl;
-            cout << "Current Balance : " << account.balance;
-        }
-        else
-        {
-            cout << "Insufficient Balance!" << endl;
-            cout << "Current Balance : " << account.balance;
-        }
+        account.balance -= amount;
+        cout << "\nMoney Withdraw Successfully!" << endl;
+        cout << "Current Balance : " << account.balance;
     }
     else
     {
-        cout << "Account Not Found!" << endl;
+        cout << "Insufficient Balance!" << endl;
+        cout << "Current Balance : " << account.balance;
     }
 }
 
 void checkBalance()
 {
-    if (!account.accountCreated)
+    if (!checkAccount())
     {
-        cout << "Please Create Account First!" << endl;
         return;
     }
-    int accountNo;
-    cout << "Enter Account Number : ";
-    cin >> accountNo;
-    if (accountNo == account.accountno)
+    if (!verifyAccount())
     {
-        cout << "\n==================================\n";
-        cout << "           ACCOUNT DETAILS            ";
-        cout << "\n===================================\n";
-        cout << "\nAccount Number : " << account.accountno;
-        cout << "\nName           : " << account.name;
-        cout << "\nBalance        : " << account.balance;
+        return;
     }
-    else
-    {
-        cout << "Account Not Found!" << endl;
-    }
+    cout << "\n==================================\n";
+    cout << "           ACCOUNT DETAILS            ";
+    cout << "\n===================================\n";
+    cout << "\nAccount Number : " << account.accountno;
+    cout << "\nName           : " << account.name;
+    cout << "\nBalance        : " << account.balance;
 }
 void deleteAccount()
 {
-    if (!account.accountCreated)
+    if (!checkAccount())
     {
-        cout << "Please Create Account First!" << endl;
         return;
     }
-    int accountNo;
-    cout << "Enter Account Number :";
-    cin >> accountNo;
-    if (accountNo == account.accountno)
+    if (!verifyAccount())
     {
-        char ch;
-        while (true)
+        return;
+    }
+    char ch;
+    while (true)
+    {
+        cout << "Are You Sure You Want To Delete Account? (Y/N): ";
+        cin >> ch;
+        if (ch == 'Y' || ch == 'y')
         {
-            cout << "Are You Sure You Want To Delete Account? (Y/N): ";
-            cin >> ch;
-            if (ch == 'Y' || ch == 'y')
-            {
-                account.accountCreated = false;
-                account.accountno = 0;
-                account.name = "";
-                account.balance = 0;
-                cout << "Account Deleted Successfully!";
-                break;
-            }
-            else if (ch == 'n' || ch == 'N')
-            {
-                cout << "Account Deletion Cancelled!";
-                break;
-            }
-            else
-            {
-                cout << "Invalid Choice!";
-                continue;
-            }
+            account.accountCreated = false;
+            account.accountno = 0;
+            account.name = "";
+            account.balance = 0;
+            cout << "Account Deleted Successfully!";
+            break;
         }
-    }
-    else
-    {
-        cout << "Account Not Found!";
-        return;
+        else if (ch == 'n' || ch == 'N')
+        {
+            cout << "Account Deletion Cancelled!";
+            break;
+        }
+        else
+        {
+            cout << "Invalid Choice!";
+            continue;
+        }
     }
 }
 
 void updateAccount()
 {
-    if (!account.accountCreated)
+    if (!checkAccount())
     {
-        cout << "Please Create Account First!" << endl;
         return;
     }
-    int accountNo;
-    cout << "Enter Account Number : ";
-    cin >> accountNo;
-    if (accountNo == account.accountno)
+    if (!verifyAccount())
     {
-        cout << "\n==================================\n";
-        cout << "           UPDATE ACCOUNT             ";
-        cout << "\n===================================\n";
+        return;
+    }
 
-        int choice;
-        cout << "1. Update Name\n2. Update Account Number\n3. Cancel\n";
-        cout << "Enter Your Choice : ";
-        cin >> choice;
+    cout << "\n==================================\n";
+    cout << "           UPDATE ACCOUNT             ";
+    cout << "\n===================================\n";
 
-        switch (choice)
+    int choice;
+    cout << "1. Update Name\n2. Update Account Number\n3. Cancel\n";
+    cout << "Enter Your Choice : ";
+    cin >> choice;
+
+    switch (choice)
+    {
+    case 1:
+    {
+        char ch;
+        string name;
+        cout << "Enter New Name : ";
+        cin >> name;
+        cout << "Are You Sure? (Y/N): ";
+        cin >> ch;
+        if (ch == 'Y' || ch == 'y')
         {
-        case 1:
-        {
-            char ch;
-            string name;
-            cout << "Enter New Name : ";
-            cin >> name;
-            cout << "Are You Sure? (Y/N): ";
-            cin >> ch;
-            if (ch == 'Y' || ch == 'y')
-            {
-                account.name = name;
-                cout << "Name Updated Successfully!";
-            }
-            else
-            {
-                cout << "Update Cancelled!";
-            }
-
-            break;
+            account.name = name;
+            cout << "Name Updated Successfully!";
         }
-
-        case 2:
+        else
         {
-            char ch;
-            int accountno;
-            cout << "Enter New Account NO : ";
-            cin >> accountno;
-            cout << "Are You Sure? (Y/N): ";
-            cin >> ch;
-            if (ch == 'Y' || ch == 'y')
-            {
-                account.accountno = accountno;
-                cout << "Account Number Updated Successfully!";
-            }
-            else
-            {
-                cout << "Update Cancelled!";
-            }
-            break;
-        }
-
-        case 3:
             cout << "Update Cancelled!";
-            break;
-
-        default:
-            cout << "Invalid Choice!";
         }
-        cout << "\nAccount Number : " << account.accountno;
-        cout << "\nName           : " << account.name;
-        cout << "\nBalance        : " << account.balance;
+
+        break;
     }
-    else
+
+    case 2:
     {
-        cout << "Account Not Found!" << endl;
+        char ch;
+        int accountno;
+        cout << "Enter New Account NO : ";
+        cin >> accountno;
+        cout << "Are You Sure? (Y/N): ";
+        cin >> ch;
+        if (ch == 'Y' || ch == 'y')
+        {
+            account.accountno = accountno;
+            cout << "Account Number Updated Successfully!";
+        }
+        else
+        {
+            cout << "Update Cancelled!";
+        }
+        break;
     }
+
+    case 3:
+        cout << "Update Cancelled!";
+        break;
+
+    default:
+        cout << "Invalid Choice!";
+    }
+    cout << "\nAccount Number : " << account.accountno;
+    cout << "\nName           : " << account.name;
+    cout << "\nBalance        : " << account.balance;
 }
 
 int main()
